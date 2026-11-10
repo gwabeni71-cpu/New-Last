@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+<title>🌀 Dream Hub | Pro</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--gold:#ffcc00;--sky:#00caff;--dark:#020617;--card:#0f172a;--border:#1e293b}
+html,body{height:100%;min-height:100vh}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--dark);color:#cbd5e1;padding:0;margin:0;overflow-x:hidden;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;display:flex;justify-content:center;align-items:flex-start}
+.vignette{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 60%,rgba(2,6,23,.75) 100%)}
+.bg-particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.bg-particles span{position:absolute;width:4px;height:4px;background:rgba(255,204,0,.12);border-radius:50%;animation:floatP 20s infinite linear}
+@keyframes floatP{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-10vh) scale(1);opacity:0}}
+#app{position:relative;z-index:1;width:100%;max-width:520px;padding:12px 12px 60px;margin:0 auto}
+.header{text-align:center;padding:14px 0 10px}
+.header h1{color:var(--gold);text-transform:uppercase;letter-spacing:3px;font-size:clamp(1.1rem,5vw,1.4rem);text-shadow:0 0 40px rgba(255,204,0,.2)}
+.header .sub{font-size:.6rem;color:#64748b;letter-spacing:4px;margin-top:2px}
+.streak-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,204,0,.1);border:1px solid rgba(255,204,0,.25);border-radius:30px;padding:4px 14px 4px 10px;font-size:.65rem;color:var(--gold);margin-top:6px}
+.streak-badge .num{font-weight:900;font-size:1rem}
+.daily-toss{background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);border-radius:16px;padding:12px;margin-bottom:14px;text-align:center;cursor:pointer;transition:transform .15s,box-shadow .3s;position:relative;overflow:hidden}
+.daily-toss::before{content:'';position:absolute;inset:-2px;background:conic-gradient(from 0deg,transparent,rgba(255,204,0,.1),transparent,rgba(255,204,0,.1),transparent);border-radius:16px;z-index:0;animation:spinBorder 6s linear infinite;opacity:.5}
+@keyframes spinBorder{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+.daily-toss>*{position:relative;z-index:1}
+.daily-toss:active{transform:scale(.97)}
+.bone-box{font-size:2rem;font-weight:900;color:#fff;text-shadow:0 0 30px rgba(255,204,0,.3);transition:all .3s}
+.bone-box.pop{animation:bonePop .5s ease}
+@keyframes bonePop{0%{transform:scale(1)}30%{transform:scale(1.5);color:var(--gold)}70%{transform:scale(.9)}100%{transform:scale(1)}}
+.trending{margin-bottom:16px;overflow:hidden}
+.trending-title{font-size:.6rem;color:#f87171;margin-bottom:6px;display:flex;align-items:center;gap:5px;font-weight:800;letter-spacing:1px}
+.trending-title .pulse-dot{display:inline-block;width:6px;height:6px;background:#f87171;border-radius:50%;animation:pulseDot 1.2s infinite}
+@keyframes pulseDot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
+.trending-container{width:100%;overflow:hidden}
+.trending-marquee{display:flex;gap:10px;animation:scrollLeft 28s linear infinite;white-space:nowrap}
+@keyframes scrollLeft{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.chip{background:#1e293b;padding:5px 14px;border-radius:20px;font-size:.7rem;border:1px solid var(--border);color:var(--sky);font-weight:600;display:flex;align-items:center;gap:4px;flex-shrink:0}
+.search-box{background:var(--card);padding:16px;border-radius:16px;margin-bottom:14px;border:1px solid var(--border)}
+.search-box input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #334155;background:#1e293b;color:#fff;margin-bottom:8px;font-size:.9rem;outline:0;transition:border .3s;-webkit-appearance:none}
+.search-box input:focus{border-color:var(--gold);box-shadow:0 0 20px rgba(255,204,0,.05)}
+.search-box .btn-row{display:flex;gap:8px}
+.search-box .btn-row button{flex:1;cursor:pointer;border:0;font-weight:800;border-radius:10px;padding:12px;transition:all .2s;text-transform:uppercase;font-size:.7rem;letter-spacing:.5px}
+.btn-main{background:var(--sky);color:#000}
+.btn-main:hover:not(:disabled){opacity:.85;transform:scale(.98)}
+.btn-main:disabled{opacity:.4;cursor:not-allowed}
+.btn-clear{background:transparent;color:#64748b;border:1px solid #334155!important}
+.btn-clear:hover{background:#1e293b}
+.results{display:none;animation:slideUp .4s ease-out}
+@keyframes slideUp{0%{opacity:0;transform:translateY(16px)}100%{opacity:1;transform:translateY(0)}}
+.res-card{background:var(--card);padding:12px 14px;border-radius:12px;margin-top:8px;border-left:3px solid var(--sky);transition:all .3s;overflow:hidden;position:relative}
+.res-card strong{color:var(--sky);display:block;margin-bottom:4px;font-size:.65rem;letter-spacing:.5px}
+.res-card p{font-size:.8rem;color:#f8fafc;line-height:1.5}
+.res-card.gold-border{border-left-color:var(--gold)}
+.res-card.gold-border strong{color:var(--gold)}
+.lotto-card{background:linear-gradient(145deg,#0f172a,#020617);border:1px dashed var(--gold);padding:16px;margin-top:12px;border-radius:12px;text-align:center;overflow:hidden;position:relative}
+.lotto-card::before{content:'🎰';position:absolute;top:-10px;right:-10px;font-size:3rem;opacity:.06;transform:rotate(15deg)}
+.lotto-nums{font-size:clamp(1.1rem,4vw,1.5rem);color:var(--gold);margin-bottom:8px;font-weight:900;letter-spacing:2px;text-shadow:0 0 40px rgba(255,204,0,.15)}
+.lotto-nums .ball{display:inline-block;background:rgba(255,204,0,.08);border:1px solid rgba(255,204,0,.2);border-radius:50%;width:38px;height:38px;line-height:38px;margin:0 2px;font-size:.85rem;transition:all .3s}
+.lotto-nums .ball.pop{animation:ballPop .4s ease}
+@keyframes ballPop{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.2)}100%{transform:scale(1);opacity:1}}
+.fafi-section{background:var(--card);padding:16px;border-radius:16px;margin-top:18px;border:1px solid var(--border);transition:all .3s}
+.fafi-title{text-align:center;color:var(--gold);font-size:.85rem;margin-bottom:10px;font-weight:800;letter-spacing:1px;display:flex;align-items:center;justify-content:center;gap:8px}
+.fafi-title .spin-indicator{display:none;font-size:.6rem;color:var(--sky);animation:pulseText .8s infinite}
+.fafi-title .spin-indicator.active{display:inline}
+@keyframes pulseText{0%,100%{opacity:1}50%{opacity:.2}}
+.fafi-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px}
+.fafi-num{background:#020617;border:1px solid var(--border);color:#475569;padding:8px 2px;text-align:center;border-radius:6px;font-weight:800;font-size:.7rem;cursor:pointer;transition:all .15s;user-select:none;position:relative}
+.fafi-num:hover{border-color:#475569;color:#94a3b8}
+.fafi-num.active{background:var(--gold);color:#000;border-color:var(--gold);transform:scale(1.08);box-shadow:0 0 30px rgba(255,204,0,.3);z-index:2}
+.fafi-num.highlight-spin{background:rgba(255,204,0,.25);border-color:var(--gold);color:var(--gold);transform:scale(1.04)}
+.fafi-num.celebrate{animation:celebPulse .6s ease 3}
+@keyframes celebPulse{0%,100%{transform:scale(1);box-shadow:0 0 20px rgba(255,204,0,0)}50%{transform:scale(1.25);box-shadow:0 0 50px rgba(255,204,0,.6);background:var(--gold);color:#000}}
+.hot-box{background:#000;border:1px solid #1e293b;padding:10px;text-align:center;border-radius:10px;margin-bottom:12px;transition:all .3s}
+.hot-box .label{font-size:.5rem;color:#64748b;text-transform:uppercase;letter-spacing:1px}
+.hot-box .value{color:var(--sky);font-weight:900;font-size:clamp(1.2rem,5vw,1.4rem);letter-spacing:2px;transition:all .3s}
+.hot-box .value.pop{animation:valuePop .5s ease}
+@keyframes valuePop{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.3);color:var(--gold)}100%{transform:scale(1);opacity:1}}
+.revealed-meaning{background:linear-gradient(145deg,#0f172a,#020617);border:1px solid var(--gold);border-radius:12px;padding:14px 16px;margin-top:8px;display:none;animation:slideUp .5s ease}
+.revealed-meaning.show{display:block}
+.revealed-meaning .num-badge{display:inline-block;background:var(--gold);color:#000;font-weight:900;font-size:.9rem;padding:2px 12px;border-radius:30px;margin-bottom:6px}
+.revealed-meaning .meaning-text{font-size:.85rem;color:#f8fafc;line-height:1.6}
+.revealed-meaning .meaning-text strong{color:var(--gold)}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:#1e293b;color:#fff;padding:10px 20px;border-radius:30px;border-left:3px solid var(--gold);font-size:.7rem;z-index:9999;opacity:0;transition:all .3s;pointer-events:none;text-align:center;max-width:90%;box-shadow:0 10px 40px rgba(0,0,0,.5);white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.hub-disclaimer{margin:16px 0 10px;padding:10px 14px;background:rgba(15,23,42,.6);border:1px dashed var(--border);border-radius:10px;font-size:.6rem;color:#64748b;text-align:center;line-height:1.6}
+.hub-disclaimer strong{color:var(--gold)}
+#confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9998}
+@media(max-width:480px){#app{padding:8px 8px 60px}.fafi-grid{grid-template-columns:repeat(7,1fr);gap:3px}.fafi-num{padding:6px 1px;font-size:.6rem}.lotto-nums .ball{width:32px;height:32px;line-height:32px;font-size:.7rem}.toast{white-space:normal;max-width:85%;bottom:70px;font-size:.65rem}}
+@media(max-width:380px){.fafi-grid{grid-template-columns:repeat(7,1fr);gap:2px}.fafi-num{padding:4px 1px;font-size:.5rem}}
+</style>
+</head>
+<body>
+<div class="vignette" aria-hidden="true"></div>
+<div class="bg-particles" id="bgParticles"></div>
+<canvas id="confetti-canvas"></canvas>
+
+<div id="app">
+  <div class="header">
+    <h1>🌀 Dream Hub</h1>
+    <div class="sub">— ancestral wisdom · modern oracle —</div>
+    <div class="streak-badge">🔥 Streak <span class="num" id="streakNum">0</span></div>
+  </div>
+
+  <div class="daily-toss" id="dailyTossArea">
+    <div style="color:var(--gold);font-size:.6rem;margin-bottom:4px;letter-spacing:1px;">🦴 Daily Spirit Number</div>
+    <div class="bone-box" id="dailyBoneNum">??</div>
+    <div style="font-size:.5rem;margin-top:4px;color:#64748b;display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;">
+      <span>tap for blessing</span>
+      
+    </div>
+  </div>
+
+  <div class="trending">
+    <div class="trending-title"><span class="pulse-dot"></span> Live Activity · Dream Pulse</div>
+    <div class="trending-container"><div class="trending-marquee" id="trendingChips"></div></div>
+  </div>
+
+  <div class="search-box">
+    <input id="dreamInput" placeholder="Enter a vision… (e.g. Snake, Money, Taxi, Sangoma)" />
+    <div class="btn-row">
+      <button id="interpretBtn" class="btn-main">🌀 Reveal Vision</button>
+      <button class="btn-clear" onclick="clearAll()">✕</button>
+    </div>
+  </div>
+
+  <div id="results" class="results">
+    <div class="res-card gold-border"><strong>📿 Gogo's Guidance</strong><p id="res-gogo"></p></div>
+    <div class="res-card"><strong>✝️ Priest's Prophecy</strong><p id="res-priest"></p></div>
+    <div class="res-card"><strong>🔮 Sangoma's Reading</strong><p id="res-sangoma"></p></div>
+    <div class="lotto-card">
+      <div style="color:var(--gold);font-size:.5rem;letter-spacing:1px;margin-bottom:4px;">🎯 Lucky Number Line (1–49)</div>
+      <div id="lotto" class="lotto-nums">— — — — — —</div>
+      <button id="lottoBtn" class="btn-main" style="background:var(--gold);display:none;margin-top:6px;" onclick="generateLotto()">⚡ Spin Lucky Line</button>
+    </div>
+  </div>
+
+  <div class="fafi-section" id="fafiSection">
+    <div class="fafi-title">🔥 Vision Wheel (1–49)<span class="spin-indicator" id="spinIndicator">⟳ spinning…</span></div>
+    <div class="hot-box"><div class="label">🎯 Matched Number</div><div class="value" id="hotNums">—</div></div>
+    <div id="fafiGrid" class="fafi-grid"></div>
+    <div id="revealedMeaning" class="revealed-meaning">
+      <div class="num-badge" id="revealedNumBadge"></div>
+      <div class="meaning-text" id="revealedMeaningText"></div>
+    </div>
+  </div>
+
+  <div class="hub-disclaimer">
+    <strong>Disclaimer:</strong> Dream Hub is a reference encyclopedia for traditional interpretation and cultural dream analysis.
+    All generated numbers use randomizers for entertainment purposes only. This app is not a gambling service and gives no gambling advice.
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+(function(){
+  var fafi=[
+    {n:1,t:"King, Human Blood, White man, Left eye"},{n:2,t:"Monkey, Native, A Spirit, Chief, Copper, Money, Jockey"},{n:3,t:"Sea Water, Accident, Frog, Sailor, Sex"},{n:4,t:"Dead man, Turkey, Small fortune, Bed"},{n:5,t:"Tiger, Fight, Strong man"},{n:6,t:"Ox Blood, Gentleman, Milk"},{n:7,t:"Lion, Thief, Big stick, Chickens"},{n:8,t:"Pig, Drunken man, Loafer, Fat man, Chinese King"},{n:9,t:"Moon, Baby, Hole, Owl, Devil, Pumpkin, Anything round"},{n:10,t:"Eggs, Train, Boat, Grave, Anything oval"},{n:11,t:"Carriage, Wood, Tree, Furniture, Bicycle, Flowers"},{n:12,t:"Dead woman, Ducks, Small fire, Chinese Queen"},{n:13,t:"Big fish, Ghosts, Spirits"},{n:14,t:"Old woman, Fox, Detective, Nurse, Native woman"},{n:15,t:"Bad woman, Prostitute, Canary, White horse, Small knife"},{n:16,t:"Small house, Coffin, Pigeon, Young woman, Paper money, Letter"},{n:17,t:"Diamond woman, Queen, Pearls, Diamond, Stars, White woman"},{n:18,t:"Silver money, Servant girl, Right eye, Butterfly, Hook, Rain"},{n:19,t:"Little girl, Smoke, Bread, Big bird, Left hand"},{n:20,t:"Cat, Sky, Handkerchief, Body, Music, Minister, Naked woman"},{n:21,t:"Old man, Stranger, Fisherman, Elephant, Knife, Nose, Teeth"},{n:22,t:"Rats, Motor car, Big ship, Left foot, Shoes"},{n:23,t:"Horse, Doctor, Head, Hair, Crown"},{n:24,t:"Mouth, Wild cat, Vixen, Lioness, Hole, Purse"},{n:25,t:"Big house, Church, Boxer, Hospital"},{n:26,t:"Bees, Crown, Bad man, Bush, General, Funeral, Madman"},{n:27,t:"Dog, Policeman, Newborn baby, Medicine, Sad news"},{n:28,t:"Sardines, Small fish, Thief, Right foot, Surprise, Small child"},{n:29,t:"Small water, Coffin, Rain, Tears, Big knife, Right hand"},{n:30,t:"Fowl, Graveyard, Sun, Throat, Indian, Forest"},{n:31,t:"Big fire, Bishop, Big spirit, Feathers, Fight, Woman"},{n:32,t:"Gold money, Dirty woman, Snake"},{n:33,t:"Little boy, Spider"},{n:34,t:"Meat, Human dung, Anything dirty, Cripple, Tramp"},{n:35,t:"Clothes, Sheep, Big hole, Big grave"},{n:36,t:"Shrimp, Stick, Admiral, Cigars, Gum"},{n:37,t:"Arrow, Lawyer, Treasure, Cooking, Stream"},{n:38,t:"Crocodile, Balloons, Sjambok, Fireworks, Stadium"},{n:39,t:"Sangoma, Soccer team, Tattoo, Bloodshed, Teacher"},{n:40,t:"Birth, Clock, Snail, Dwarf, River, Traditional healer"},{n:41,t:"Cattle, Planets, Cave, Desert, Monster"},{n:42,t:"Tornado, Spear, Umbrella, Camel, Door"},{n:43,t:"Army, Thunder, Astronaut, Rabbit, Turtle"},{n:44,t:"Shark, Bird farm, Body builder, Injury, Mud"},{n:45,t:"Football, Computers, Jewellery, Wrestler, Storm"},{n:46,t:"Ambulance, Beard, Sea sand, Scissors, Key"},{n:47,t:"Stallion, Kite, TV, Lightning, Carnival, Hut"},{n:48,t:"Clown, Rainbow, Nightmare, Whale, Wealth"},{n:49,t:"Shebeen, Circus, Chocolate, Space ship"}
+  ];
+
+  var saInterpretations={
+    "ancestors":"In SA Nguni tradition, dreaming of ancestors (amadlozi) means they are guiding you. Number 13 appears. This calls for ritual cleansing.",
+    "taxi":"Dreaming of a minibus taxi signals journey. Number 22. You will meet someone influential.",
+    "sangoma":"Seeing a sangoma is powerful — number 39. Indicates spiritual calling (thwasa).",
+    "shebeen":"Number 49 — warns of gossip or celebrations in townships.",
+    "braai":"Linked to number 31 and 34. Foretells family reunions.",
+    "lotto":"Chasing money connects to numbers 2 and 32. Speaks of hope.",
+    "mkhaba":"Pregnancy dream — number 9. Means new beginnings.",
+    "umkhovu":"Tokoloshe — number 7 and 13. Call a traditional healer.",
+    "soccer":"Football — number 45. Means teamwork and victory."
+  };
+
+  function store(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){return null}}
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+
+  var spinInterval=null,isSpinning=false;
+  var streak=parseInt(store('dreamStreak')||'0')||0;
+  var currentRevealedNumber=null;
+  
+
+  window.openSmartLink=function(){};
+
+  var spinIndicator=document.getElementById('spinIndicator');
+  var hotNums=document.getElementById('hotNums');
+  var resultsDiv=document.getElementById('results');
+  var lottoBtn=document.getElementById('lottoBtn');
+  var lottoDiv=document.getElementById('lotto');
+  var interpretBtn=document.getElementById('interpretBtn');
+  var dreamInput=document.getElementById('dreamInput');
+  var toast=document.getElementById('toast');
+  var streakNum=document.getElementById('streakNum');
+  var revealedMeaning=document.getElementById('revealedMeaning');
+  var revealedNumBadge=document.getElementById('revealedNumBadge');
+  var revealedMeaningText=document.getElementById('revealedMeaningText');
+  var dailyBoneNum=document.getElementById('dailyBoneNum');
+  var dailyTossArea=document.getElementById('dailyTossArea');
+
+  function showToast(msg,dur){
+    if(!toast)return;
+    dur=dur||2500;
+    toast.textContent=msg;
+    toast.classList.add('show');
+    clearTimeout(toast._hide);
+    toast._hide=setTimeout(function(){toast.classList.remove('show')},dur);
+  }
+
+  var canvas=document.getElementById('confetti-canvas');
+  var ctx=canvas.getContext('2d');
+  var confettiPieces=[],confettiRunning=false;
+  function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}
+  window.addEventListener('resize',resizeCanvas,{passive:true});
+  resizeCanvas();
+
+  function ConfettiPiece(){
+    this.x=Math.random()*canvas.width;
+    this.y=Math.random()*canvas.height-canvas.height;
+    this.w=6+Math.random()*6;
+    this.h=4+Math.random()*4;
+    var colors=['#ffcc00','#00caff','#ff6b6b','#51cf66','#ffd43b','#cc5de8','#ff922b'];
+    this.color=colors[Math.floor(Math.random()*colors.length)];
+    this.vx=(Math.random()-0.5)*3;
+    this.vy=1.5+Math.random()*3;
+    this.rot=Math.random()*360;
+    this.rv=(Math.random()-0.5)*8;
+    this.life=1;
+    this.decay=0.003+Math.random()*0.005;
+  }
+  ConfettiPiece.prototype.update=function(){
+    this.x+=this.vx+Math.sin(this.y*0.01)*0.3;
+    this.y+=this.vy;
+    this.rot+=this.rv;
+    this.life-=this.decay;
+    return this.life>0&&this.y<canvas.height+20;
+  };
+  ConfettiPiece.prototype.draw=function(ctx){
+    ctx.save();
+    ctx.translate(this.x,this.y);
+    ctx.rotate(this.rot*Math.PI/180);
+    ctx.globalAlpha=this.life;
+    ctx.fillStyle=this.color;
+    ctx.fillRect(-this.w/2,-this.h/2,this.w,this.h);
+    ctx.restore();
+  };
+  function fireConfetti(count){
+    count=count||80;
+    for(var i=0;i<count;i++)confettiPieces.push(new ConfettiPiece());
+    if(!confettiRunning){confettiRunning=true;animateConfetti()}
+  }
+  function animateConfetti(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    var remaining=[];
+    for(var i=0;i<confettiPieces.length;i++){if(confettiPieces[i].update())remaining.push(confettiPieces[i])}
+    confettiPieces=remaining;
+    for(var j=0;j<confettiPieces.length;j++)confettiPieces[j].draw(ctx);
+    if(confettiPieces.length>0)requestAnimationFrame(animateConfetti);
+    else{confettiRunning=false;ctx.clearRect(0,0,canvas.width,canvas.height)}
+  }
+
+  var audioCtx=null;
+  function getAudioCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx}
+  function playBeep(freq,dur,type,vol){
+    freq=freq||600;dur=dur||120;type=type||'sine';vol=vol||0.15;
+    try{
+      var c=getAudioCtx();
+      var osc=c.createOscillator();
+      var gain=c.createGain();
+      osc.type=type;
+      osc.frequency.value=freq;
+      gain.gain.setValueAtTime(vol,c.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001,c.currentTime+dur/1000);
+      osc.connect(gain);
+      gain.connect(c.destination);
+      osc.start(c.currentTime);
+      osc.stop(c.currentTime+dur/1000);
+    }catch(e){}
+  }
+  function playSpinSound(){playBeep(400,60,'square',0.06)}
+  function playHitSound(){
+    playBeep(880,200,'sine',0.18);
+    setTimeout(function(){playBeep(1100,150,'sine',0.14)},150);
+    setTimeout(function(){playBeep(1320,200,'sine',0.12)},300);
+  }
+
+  function updateStreak(win){
+    win=(win!==undefined)?win:true;
+    if(win)streak++;else streak=0;
+    store('dreamStreak',streak);
+    streakNum.textContent=streak;
+    if(streak>=3)showToast('🔥 '+streak+'-dream streak! Ancestors are speaking!');
+  }
+
+  function revealMeaningForNumber(n){
+    var entry=null;
+    for(var i=0;i<fafi.length;i++){if(fafi[i].n===n){entry=fafi[i];break}}
+    if(!entry)return;
+    currentRevealedNumber=n;
+    revealedNumBadge.textContent='#'+n;
+    revealedMeaningText.innerHTML='<strong>Meaning:</strong> '+entry.t;
+    revealedMeaning.classList.add('show');
+    store('lastRevealedNumber',n);
+    store('lastRevealedMeaning',entry.t);
+  }
+  function hideRevealedMeaning(){
+    revealedMeaning.classList.remove('show');
+    currentRevealedNumber=null;
+    store('lastRevealedNumber',null);
+    store('lastRevealedMeaning',null);
+  }
+
+  function selectNum(n,highlightOnly){
+    var nums=document.querySelectorAll('.fafi-num');
+    for(var i=0;i<nums.length;i++)nums[i].classList.remove('active','highlight-spin','celebrate');
+    var el=document.getElementById('num'+n);
+    if(el){if(highlightOnly)el.classList.add('highlight-spin');else el.classList.add('active','celebrate')}
+  }
+
+  function spinWheel(targetNumber,callback){
+    if(isSpinning)return;
+    isSpinning=true;
+    spinIndicator.classList.add('active');
+    var nums=document.querySelectorAll('.fafi-num');
+    for(var i=0;i<nums.length;i++)nums[i].classList.remove('active','highlight-spin','celebrate');
+    var total=nums.length;
+    var step=0,totalSteps=30+Math.floor(Math.random()*20);
+    var currentIdx=Math.floor(Math.random()*total);
+    if(spinInterval)clearInterval(spinInterval);
+    var soundCounter=0;
+    var speed=60;
+
+    spinInterval=setInterval(function(){
+      for(var i=0;i<nums.length;i++)nums[i].classList.remove('highlight-spin');
+      currentIdx=(currentIdx+1)%total;
+      nums[currentIdx].classList.add('highlight-spin');
+      soundCounter++;
+      if(soundCounter%3===0)playSpinSound();
+      step++;
+      if(step>totalSteps-10){
+        clearInterval(spinInterval);
+        var remaining=totalSteps-step;
+        var slowSpeed=60+(10-remaining)*30;
+        spinInterval=setInterval(function(){
+          for(var i=0;i<nums.length;i++)nums[i].classList.remove('highlight-spin');
+          currentIdx=(currentIdx+1)%total;
+          nums[currentIdx].classList.add('highlight-spin');
+          soundCounter++;
+          if(soundCounter%3===0)playSpinSound();
+          step++;
+          if(step>=totalSteps){
+            clearInterval(spinInterval);
+            spinInterval=null;
+            finishSpin(targetNumber,nums);
+          }
+        },Math.min(slowSpeed,300));
+      }
+      if(step>=totalSteps){
+        clearInterval(spinInterval);
+        spinInterval=null;
+        finishSpin(targetNumber,nums);
+      }
+    },speed);
+
+    function finishSpin(target,allNums){
+      isSpinning=false;
+      spinIndicator.classList.remove('active');
+      for(var i=0;i<allNums.length;i++)allNums[i].classList.remove('highlight-spin');
+      var targetEl=document.getElementById('num'+target);
+      if(targetEl)targetEl.classList.add('active','celebrate');
+      hotNums.textContent=target;
+      store('lastHotNumber',target);
+      hotNums.classList.remove('pop');
+      void hotNums.offsetWidth;
+      hotNums.classList.add('pop');
+      playHitSound();
+      fireConfetti(100);
+      updateStreak(true);
+      revealMeaningForNumber(target);
+      if(callback)callback();
+    }
+  }
+
+  function getSouthAfricanDreamInterpretation(word,matchedNumber){
+    var lower=word.toLowerCase();
+    for(var key in saInterpretations){if(lower.indexOf(key)!==-1)return saInterpretations[key]}
+    var randomSpirit=[
+      "In Zulu folklore, this signals a message from the river (uMamlambo).",
+      "According to Xhosa elders, this carries Eastern Cape ancestor energy.",
+      "Your dream connects to Soweto — community and hustle.",
+      "Sangomas of KwaZulu say this appears before a wedding or birth.",
+      "From the Karoo, this brings fortune for livestock.",
+      "In Venda tradition, the python spirit watches over you.",
+      "Basotho history tells this heralds a rain ceremony.",
+      "Tsonga ancestors whisper: this holds keys to healing."
+    ];
+    var idx=matchedNumber%randomSpirit.length;
+    return randomSpirit[idx]+' In SA dreaming, "'+word+'" reflects collective energy — gifts or warnings from the unseen world.';
+  }
+
+  function interpretAll(){
+    if(isSpinning)return;
+    var raw=dreamInput.value.trim().toLowerCase();
+    if(!raw){showToast('Please enter a vision word');return}
+    var input=esc(raw);
+    var hits=[];
+    for(var i=0;i<fafi.length;i++){if(fafi[i].t.toLowerCase().indexOf(raw)!==-1)hits.push(fafi[i])}
+    var targetNumber;
+    resultsDiv.style.display='block';
+    var fallbackSymbol;
+
+    if(hits.length>0){
+      var primary=hits[0].n;
+      var symbol=hits[0].t.split(',')[0];
+      targetNumber=primary;
+      fallbackSymbol=symbol;
+      var saInsight=esc(getSouthAfricanDreamInterpretation(raw,primary));
+      document.getElementById('res-gogo').innerHTML='✨ Gogo says: "'+input+'" is a powerful sign. Number <strong>'+primary+'</strong> ('+symbol+') appears. '+saInsight.substring(0,150)+'…';
+      document.getElementById('res-priest').innerHTML='The Holy Spirit reveals: "'+input+'" aligns with number <strong>'+primary+'</strong>. This dream preaches protection over your home.';
+      document.getElementById('res-sangoma').innerHTML='I throw the bones: '+input+' speaks to the spirit realm. Number <strong>'+primary+'</strong> brings energy of '+(symbol||'transformation')+'. Ancestors walk with you.';
+    }else{
+      targetNumber=Math.floor(Math.random()*49)+1;
+      var fb=null;
+      for(var j=0;j<fafi.length;j++){if(fafi[j].n===targetNumber){fb=fafi[j];break}}
+      fallbackSymbol=fb?fb.t.split(',')[0]:'blessing';
+      var customInsight=esc(getSouthAfricanDreamInterpretation(raw,targetNumber));
+      document.getElementById('res-gogo').innerHTML='💫 Gogo\'s wisdom: "'+input+'" is not in old books, but ancestors guide you to <strong>'+targetNumber+'</strong> ('+fallbackSymbol+'). '+customInsight.substring(0,150);
+      document.getElementById('res-priest').innerHTML='✝️ Prophet\'s voice: Though "'+input+'" is rare, Heaven assigns you key <strong>'+targetNumber+'</strong>. Pray over this number at dawn.';
+      document.getElementById('res-sangoma').innerHTML='🔮 The bones settle on <strong>'+targetNumber+'</strong> for "'+input+'". Your ancestors speak in new tongues. A blessing is coming.';
+    }
+    lottoBtn.style.display='block';
+    hotNums.textContent='…';
+    hotNums.classList.remove('pop');
+    hideRevealedMeaning();
+    setTimeout(function(){
+      spinWheel(targetNumber,function(){
+        selectNum(targetNumber,false);
+        streakNum.textContent=streak;
+      });
+    },400);
+    playBeep(500,80,'sine',0.08);
+    setTimeout(function(){playBeep(700,80,'sine',0.08)},120);
+  }
+
+  function generateLotto(){
+    var hot=parseInt(hotNums.textContent);
+    var nums=[];
+    if(!isNaN(hot)&&hot>=1&&hot<=49)nums.push(hot);
+    while(nums.length<6){
+      var r=Math.floor(Math.random()*49)+1;
+      var exists=false;
+      for(var i=0;i<nums.length;i++){if(nums[i]===r){exists=true;break}}
+      if(!exists)nums.push(r);
+    }
+    nums.sort(function(a,b){return a-b});
+    var html='';
+    for(var j=0;j<nums.length;j++){
+      var cls='ball';
+      if(j===0)cls+=' pop';
+      html+='<span class="'+cls+'" style="animation-delay:'+(j*0.08)+'s">'+String(nums[j]).padStart(2,'0')+'</span>';
+    }
+    lottoDiv.innerHTML=html;
+    lottoBtn.style.display='none';
+    showToast('🎰 Your lucky line is ready!');
+    playBeep(1000,100,'sine',0.1);
+    setTimeout(function(){playBeep(1200,100,'sine',0.1)},120);
+    fireConfetti(50);
+  }
+
+  function dailyBoneToss(){
+    var today=new Date().toDateString();
+    if(store('lastBoneToss')===today){showToast("You've already received today's blessing!");return}
+    var lucky=Math.floor(Math.random()*49)+1;
+    store('lastBoneToss',today);
+    store('todayBoneNum',lucky);
+    dailyBoneNum.textContent=lucky;
+    dailyBoneNum.classList.remove('pop');
+    void dailyBoneNum.offsetWidth;
+    dailyBoneNum.classList.add('pop');
+    showToast('🎁 Daily number: '+lucky+'!');
+    playBeep(660,150,'sine',0.12);
+    setTimeout(function(){playBeep(880,150,'sine',0.1)},180);
+    fireConfetti(30);
+  }
+
+  function clearAll(){
+    dreamInput.value='';
+    resultsDiv.style.display='none';
+    lottoBtn.style.display='none';
+    lottoDiv.innerHTML='— — — — — —';
+    showToast('Cleared ✨');
+  }
+
+  function updateTrending(){
+    var sets=[
+      ["Water","Snake","Money","Funeral","Police","Lion","Grave"],
+      ["Sangoma","Doctor","Fire","Baby","Diamond","Forest","Gold"],
+      ["King","Teeth","Accident","Stars","Dog","Moon","Thief"]
+    ];
+    var idx=Math.floor(new Date().getHours()/8)%sets.length;
+    var list=sets[idx];
+    var marquee=document.getElementById('trendingChips');
+    if(marquee){
+      var html='';
+      var fullList=list.concat(list).concat(list);
+      for(var i=0;i<fullList.length;i++)html+='<div class="chip"><span>⚡</span> '+fullList[i]+'</div>';
+      marquee.innerHTML=html;
+    }
+  }
+
+  function initBgParticles(){
+    var container=document.getElementById('bgParticles');
+    if(!container)return;
+    var frag=document.createDocumentFragment();
+    for(var i=0;i<30;i++){
+      var span=document.createElement('span');
+      span.style.left=Math.random()*100+'%';
+      var size=2+Math.random()*4;
+      span.style.width=size+'px';
+      span.style.height=size+'px';
+      span.style.animationDuration=(15+Math.random()*20)+'s';
+      span.style.animationDelay=(Math.random()*20)+'s';
+      span.style.opacity=0.1+Math.random()*0.2;
+      frag.appendChild(span);
+    }
+    container.appendChild(frag);
+  }
+
+  function onNumClick(n){
+    selectNum(n,false);
+    if(currentRevealedNumber===n)showToast('🔓 This is your dream number — meaning is shown below.');
+    else showToast('🔓 You can click any number to explore! But only your matched number reveals the full meaning.');
+  }
+
+  function init(){
+    var html='';
+    for(var i=0;i<fafi.length;i++)html+='<div class="fafi-num" id="num'+fafi[i].n+'" onclick="onNumClick('+fafi[i].n+')">'+fafi[i].n+'</div>';
+    document.getElementById('fafiGrid').innerHTML=html;
+
+    var savedHot=store('lastHotNumber');
+    if(savedHot){hotNums.textContent=savedHot;selectNum(parseInt(savedHot),false)}
+    var lastNum=store('lastRevealedNumber');
+    var lastMeaning=store('lastRevealedMeaning');
+    if(lastNum&&lastMeaning){
+      currentRevealedNumber=parseInt(lastNum);
+      revealedNumBadge.textContent='#'+lastNum;
+      revealedMeaningText.innerHTML='<strong>Meaning:</strong> '+esc(lastMeaning);
+      revealedMeaning.classList.add('show');
+    }
+
+    updateTrending();
+
+    if(store('lastBoneToss')===new Date().toDateString()){
+      var saved=store('todayBoneNum');
+      if(saved)dailyBoneNum.textContent=saved;
+    }
+    streakNum.textContent=streak;
+
+    dailyTossArea.onclick=dailyBoneToss;
+    interpretBtn.onclick=interpretAll;
+    dreamInput.addEventListener('keydown',function(e){if(e.key==='Enter')interpretAll()});
+    window.addEventListener('beforeunload',function(){if(spinInterval)clearInterval(spinInterval)},{passive:true});
+    initBgParticles();
+  }
+
+  window.clearAll=clearAll;
+  window.generateLotto=generateLotto;
+  window.onNumClick=onNumClick;
+  window.dailyBoneToss=dailyBoneToss;
+  window.interpretAll=interpretAll;
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BOLO – Music, TV, Movies &amp; News</title>
+<meta name="theme-color" content="#000000">
+<meta name="description" content="Music, TV, Movies, News and Dream Hub in one app by Kutullo Angel Media">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="BOLO">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<style>
+:root{--gold:#ffcc00;--tab-h:58px;--banner-h:0px;--sp-h:38px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#000;color:#fff;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;overflow:hidden}
+button{font-family:inherit}
+#frames{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + var(--banner-h));bottom:calc(var(--tab-h) + var(--sp-h) + env(safe-area-inset-bottom,0px));transition:top .3s}
+.pane{position:absolute;inset:0;display:none;background:#000}
+.pane.on{display:block}
+.pane iframe{width:100%;height:100%;border:0;display:block;background:#000}
+.pane .ld{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:4px;background:#000;transition:opacity .4s}
+.pane .ld.done{opacity:0;pointer-events:none}
+.ld i{width:4px;height:26px;border-radius:2px;background:linear-gradient(to top,#9c27b0,#e01b5d,var(--gold));animation:eq 1s ease-in-out infinite alternate}
+.ld i:nth-child(2){animation-delay:.15s}.ld i:nth-child(3){animation-delay:.3s}.ld i:nth-child(4){animation-delay:.45s}.ld i:nth-child(5){animation-delay:.6s}
+@keyframes eq{from{transform:scaleY(.3)}to{transform:scaleY(1.2)}}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:50;height:calc(var(--tab-h) + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);display:flex;background:linear-gradient(180deg,#0d0d0d,#000);border-top:1px solid rgba(255,204,0,.45);box-shadow:0 -6px 24px rgba(0,0,0,.8)}
+nav button{flex:1;position:relative;background:0;border:0;color:#8a8a8a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font:800 9px/1 inherit;letter-spacing:1px;text-transform:uppercase;cursor:pointer;touch-action:manipulation;transition:color .2s}
+nav button svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+nav button.on{color:var(--gold)}
+nav button.on svg{transform:translateY(-1px) scale(1.08);filter:drop-shadow(0 0 6px rgba(255,204,0,.55))}
+nav button.on::before{content:'';position:absolute;top:0;left:30%;right:30%;height:2px;border-radius:0 0 4px 4px;background:var(--gold);box-shadow:0 0 10px var(--gold)}
+#splash{position:fixed;inset:0;z-index:999;background:radial-gradient(circle at 50% 40%,#1a1500,#000 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .5s,visibility .5s}
+#splash.hide{opacity:0;visibility:hidden}
+#splash img.l{width:112px;height:112px;border-radius:26px;border:2px solid var(--gold);box-shadow:0 0 40px rgba(255,204,0,.3);animation:pu 2.2s ease-in-out infinite}
+#splash h1{margin:0;font-size:20px;letter-spacing:6px;font-weight:900;color:var(--gold)}
+#splash p{margin:0;font-size:9px;letter-spacing:2.5px;color:#888;text-transform:uppercase}
+#splash .k{position:absolute;bottom:calc(28px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:8px;font-size:9px;letter-spacing:2px;color:#777;text-transform:uppercase}
+#splash .k img{width:30px;height:30px;border-radius:8px;object-fit:cover}
+@keyframes pu{50%{transform:scale(1.05);box-shadow:0 0 60px rgba(255,204,0,.5)}}
+/* install banner (always visible in the browser) */
+#ib{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0px);z-index:60;height:64px;display:none;align-items:center;gap:10px;padding:8px 12px;background:linear-gradient(180deg,#1c1600,#0a0a0a);border-bottom:2px solid var(--gold);box-shadow:0 6px 20px rgba(0,0,0,.7)}
+#ib.show{display:flex}
+#ib img{width:40px;height:40px;border-radius:10px;border:1.5px solid var(--gold);flex-shrink:0}
+#ib div{flex:1;min-width:0}
+#ib b{display:block;font-size:12px;color:var(--gold);font-weight:900;letter-spacing:.4px}
+#ib span{display:block;font-size:10px;color:#bbb;margin-top:2px;line-height:1.3}
+#ib .go{background:linear-gradient(135deg,var(--gold),#f5a623);color:#000;border:0;border-radius:30px;padding:10px 18px;font-weight:900;font-size:11px;letter-spacing:.6px;text-transform:uppercase;cursor:pointer;flex-shrink:0;animation:glow 2s infinite}
+#ib .x{background:0;border:0;color:#888;font-size:18px;cursor:pointer;padding:6px}
+@keyframes glow{50%{box-shadow:0 0 18px rgba(255,204,0,.6)}}
+/* install gate */
+#gate{position:fixed;inset:0;z-index:800;display:none;align-items:center;justify-content:center;padding:20px;background:radial-gradient(circle at 50% 30%,#1c1600,#000 75%)}
+#gate.show{display:flex}
+#gate .gc{width:100%;max-width:380px;text-align:center}
+#gate .gl{width:96px;height:96px;border-radius:24px;border:2px solid var(--gold);box-shadow:0 0 40px rgba(255,204,0,.3)}
+#gate h2{margin:16px 0 6px;font-size:24px;font-weight:900;letter-spacing:2px;color:var(--gold);text-transform:uppercase}
+#gate .gs{margin:0 0 16px;font-size:13px;color:#bbb;line-height:1.5}
+#gate ul{list-style:none;margin:0 0 22px;padding:0;text-align:left;display:inline-block}
+#gate li{font-size:13px;color:#e6e6e6;margin:8px 0;padding-left:26px;position:relative}
+#gate li::before{content:'✓';position:absolute;left:0;color:var(--gold);font-weight:900}
+#gate .gp{display:block;width:100%;background:linear-gradient(135deg,var(--gold),#f5a623);color:#000;border:0;border-radius:60px;padding:16px;font-size:15px;font-weight:900;letter-spacing:1px;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 28px rgba(255,204,0,.35)}
+#gate .gp:active{transform:scale(.97)}
+#gate .gh{margin:14px 0 0;padding:12px;border:1px solid rgba(255,204,0,.3);border-radius:14px;background:rgba(255,204,0,.06);font-size:12px;color:#ddd;line-height:1.6;text-align:left}
+#gate .gk{margin-top:18px;background:0;border:0;color:#9a9a9a;font-size:12px;padding:8px 12px;cursor:pointer}
+#gate .gk:disabled{opacity:.5;cursor:default}
+#gate .gf{display:block;margin-top:10px;font-size:10px;color:#777;text-decoration:underline}
+#sp{position:fixed;left:0;right:0;bottom:calc(var(--tab-h) + env(safe-area-inset-bottom,0px));height:var(--sp-h);z-index:49;display:flex;align-items:center;gap:8px;padding:0 12px;background:#0a0a0a;border-top:1px solid #222}
+#sp .t{background:#2a2a2a;color:#ddd;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;letter-spacing:.6px;text-transform:uppercase;flex-shrink:0}
+#sp a{flex:1;min-width:0;color:var(--gold);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#toast{position:fixed;left:50%;bottom:calc(var(--tab-h) + 16px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;z-index:70;background:#222;color:var(--gold);border:1px solid var(--gold);padding:8px 18px;border-radius:30px;font-size:12px;transition:.3s;pointer-events:none;max-width:90%;text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+<script>if(window.self!==window.top){document.documentElement.style.display='none'}</script>
+</head>
+<body>
+
+<div id="splash">
+  <img class="l" src="icon-192.png" alt="BOLO">
+  <h1>BOLO</h1><p>Music • TV • Movies • News</p>
+  <div class="k"><img src="kutullo-logo.jpg" alt=""><span>Kutullo Angel Media</span></div>
+</div>
+
+<div id="gate" role="dialog" aria-modal="true" aria-labelledby="gT">
+  <div class="gc">
+    <img class="gl" src="icon-192.png" alt="">
+    <h2 id="gT">Install BOLO</h2>
+    <p class="gs">Music, TV, Movies, News and Dreams in one app.</p>
+    <ul><li>Full-screen, app-style experience</li><li>Opens instantly from your home screen</li><li>Faster, and works on weak connections</li></ul>
+    <button class="gp" id="gInstall">Install App</button>
+    <div class="gh" id="gHelp" hidden></div>
+    <button class="gk" id="gSkip" disabled>Continue in browser (<span id="gCount">6</span>)</button>
+    <a class="gf" href="privacy.html" target="_blank" rel="noopener">Privacy &amp; YouTube terms</a>
+  </div>
+</div>
+
+<div id="ib" role="region" aria-label="Install BOLO">
+  <img src="icon-192.png" alt="">
+  <div><b>Get the BOLO app</b><span>Install for the full-screen experience. Free.</span></div>
+  <button class="go" id="ibGo">Install</button>
+  <button class="x" id="ibX" aria-label="Hide">✕</button>
+</div>
+
+<div id="frames">
+  <div class="pane" id="p-music"><div class="ld"><i></i><i></i><i></i><i></i><i></i></div></div>
+  <div class="pane" id="p-tv"><div class="ld"><i></i><i></i><i></i><i></i><i></i></div></div>
+  <div class="pane" id="p-movies"><div class="ld"><i></i><i></i><i></i><i></i><i></i></div></div>
+  <div class="pane" id="p-news"><div class="ld"><i></i><i></i><i></i><i></i><i></i></div></div>
+  <div class="pane" id="p-dream"><div class="ld"><i></i><i></i><i></i><i></i><i></i></div></div>
+</div>
+
+<div id="sp" role="complementary" aria-label="Sponsored"><span class="t">Ad</span><a id="spA" href="#" target="_blank" rel="noopener sponsored nofollow"></a></div>
+
+<nav id="tabs" aria-label="Sections">
+  <button data-t="music"><svg viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>Music</button>
+  <button data-t="tv"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M17 2l-5 5-5-5"/></svg>TV</button>
+  <button data-t="movies"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 3v18M17 3v18M3 8h4M3 16h4M17 8h4M17 16h4"/></svg>Movies</button>
+  <button data-t="news"><svg viewBox="0 0 24 24"><path d="M4 4h13a2 2 0 012 2v14H6a2 2 0 01-2-2V4z"/><path d="M19 8h1a1 1 0 011 1v9a2 2 0 01-2 2M8 8h7M8 12h7M8 16h4"/></svg>News</button>
+  <button data-t="dream"><svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/><path d="M17 4v3M15.5 5.5h3"/></svg>Dreams</button>
+</nav>
+<div id="toast" role="status"></div>
+
+<script>
+(function(){
+  if(window.self!==window.top)return; // never run nested inside another frame
+  var PAGES={music:'music.html',tv:'tv.html',movies:'movies.html',news:'news.html',dream:'dream.html'},cur=null;
+  var $=function(s){return document.querySelector(s)};
+  var ALLOW='autoplay; fullscreen; encrypted-media; picture-in-picture; clipboard-write; web-share';
+  function ss(k,v){try{if(v===undefined)return sessionStorage.getItem(k);sessionStorage.setItem(k,v)}catch(e){return null}}
+  function toast(m){var t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove('show')},2800)}
+
+  /* ---------- tabs ---------- */
+  function frameOf(t){return $('#p-'+t+' iframe')}
+  function pause(t){ // stop playback in a tab we are leaving (YouTube policy: no background playback)
+    var f=frameOf(t);if(!f)return;
+    try{var w=f.contentWindow;if(w&&typeof w.__boloPause==='function')w.__boloPause()}catch(e){}
+  }
+  function load(t){
+    var p=$('#p-'+t);if(frameOf(t))return;
+    var f=document.createElement('iframe');
+    f.src=PAGES[t];f.setAttribute('allow',ALLOW);f.allowFullscreen=true;f.title=t;
+    f.addEventListener('load',function(){p.querySelector('.ld').classList.add('done')});
+    p.insertBefore(f,p.firstChild);
+  }
+  function show(t,fromHash){
+    if(!PAGES[t])t='music';
+    if(t===cur){try{frameOf(t).contentWindow.scrollTo({top:0,behavior:'smooth'})}catch(e){}return}
+    if(cur)pause(cur);
+    cur=t;load(t);
+    document.querySelectorAll('.pane').forEach(function(p){p.classList.toggle('on',p.id==='p-'+t)});
+    document.querySelectorAll('nav button').forEach(function(b){var on=b.dataset.t===t;b.classList.toggle('on',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
+    if(!fromHash)history.replaceState(null,'','#'+t);
+  }
+  document.querySelectorAll('nav button').forEach(function(b){b.addEventListener('click',function(){show(b.dataset.t)})});
+  window.addEventListener('hashchange',function(){show(location.hash.slice(1),true)});
+  document.addEventListener('visibilitychange',function(){if(document.hidden&&cur)pause(cur)});
+  window.addEventListener('pagehide',function(){if(cur)pause(cur)});
+  var start=location.hash.slice(1);
+  show(PAGES[start]?start:'music',true);
+  window.addEventListener('load',function(){setTimeout(function(){$('#splash').classList.add('hide')},900)});
+
+  /* ---------- install prompts ---------- */
+  var gate=$('#gate'),ib=$('#ib'),dp=null;
+  var standalone=matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||navigator.standalone===true||(document.referrer||'').indexOf('android-app://')===0;
+  var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  function setBanner(on){ib.classList.toggle('show',on);document.documentElement.style.setProperty('--banner-h',on?'64px':'0px')}
+  function help(){
+    var h=$('#gHelp');h.hidden=false;
+    h.innerHTML=ios?'<b>On iPhone / iPad (Safari):</b><br>1. Tap the <b>Share</b> button<br>2. Choose <b>Add to Home Screen</b><br>3. Tap <b>Add</b>':'<b>To install:</b><br>1. Open your browser menu (⋮)<br>2. Tap <b>Install app</b> or <b>Add to Home screen</b><br>3. Confirm, then open BOLO from your home screen';
+  }
+  function install(){
+    if(dp){dp.prompt();dp.userChoice.then(function(r){dp=null;if(r&&r.outcome==='accepted'){gate.classList.remove('show');setBanner(false)}else help()});return}
+    help();
+  }
+  function closeGate(){gate.classList.remove('show');ss('bolo_gate','1');setBanner(true)}
+  if(!standalone){
+    if(!ss('bolo_gate')){
+      gate.classList.add('show');
+      var n=6,sk=$('#gSkip'),c=$('#gCount');
+      var iv=setInterval(function(){n--;c.textContent=n;if(n<=0){clearInterval(iv);sk.disabled=false;sk.textContent='Continue in browser'}},1000);
+      sk.addEventListener('click',function(){if(!sk.disabled)closeGate()});
+    }else if(!ss('bolo_ib_off'))setBanner(true);
+    $('#gInstall').addEventListener('click',install);
+    $('#ibGo').addEventListener('click',function(){if(dp)install();else{gate.classList.add('show');help()}});
+    $('#ibX').addEventListener('click',function(){setBanner(false);ss('bolo_ib_off','1')});
+    window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e});
+    window.addEventListener('appinstalled',function(){gate.classList.remove('show');setBanner(false);toast('BOLO installed ✓')});
+  }
+
+  /* ---------- sponsored strip: labelled, tap to open, never over a video ---------- */
+  var SP=[
+    {u:'https://omg10.com/4/11060984',t:'Sponsored offer – tap to view'},
+    {u:'https://everybodycollecteagle.com/tmadq5gn43?key=2a459c79c0aa475c4f8ce86259a42b61',t:'Partner offer – tap to view'},
+    {u:'https://nap5k.com/4/11152512',t:'Sponsored – discover offers'},
+    {u:'https://everybodycollecteagle.com/tmadq5gn43?key=2a459c79c0aa475c4f8ce86259a42b61',t:'Partner deals – tap to view'},
+    {u:'https://omg10.com/4/11010816',t:'Sponsored – tap to view'}
+  ],si=0,spA=$('#spA');
+  function spSet(){spA.href=SP[si].u;spA.textContent=SP[si].t+'  ›'}
+  spSet();
+  setInterval(function(){si=(si+1)%SP.length;spSet()},15000);
+  spA.addEventListener('click',function(){setTimeout(function(){si=(si+1)%SP.length;spSet()},400)});
+
+  window.addEventListener('offline',function(){toast('You are offline')});
+  window.addEventListener('online',function(){toast('Back online')});
+  if('serviceWorker' in navigator&&location.protocol!=='file:')
+    window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});
+})();
+</script>
+</body>
+</html>
